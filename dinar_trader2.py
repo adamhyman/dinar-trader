@@ -18,9 +18,9 @@ import hashlib
 import json
 import hmac
 
-#print("Sleeping")
-#time.sleep(1200)
-#print("Waking Up")
+print("Sleeping")
+time.sleep(4500)
+print("Waking Up")
 
 class GeminiSession:
     """Defines a Gemini API session.
