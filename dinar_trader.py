@@ -355,8 +355,6 @@ for x in range(1, 40):
     print ("Kraken Ask:  " + str(k_ask_eth))
 
 
-    # Buy .01 BTC at $575/BTC and print the response
-    # print(session.new_order("btcusd", ".01", "575","buy"))
     gbalance = session.get_ticker("ethusd")
     #print(session.get_ticker("ethusd"))
 
