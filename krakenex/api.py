@@ -86,7 +86,6 @@ class API(object):
             self.secret = f.readline().strip()
         return
 
-
     # FIXME: use @property instead?
     def set_connection(self, conn):
         """ Set an existing connection to be used as a default in queries.

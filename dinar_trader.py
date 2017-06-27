@@ -1,5 +1,7 @@
 import sys
+import os.path
 
+print (os.path.dirname(__file__) + '\..\kraken.key')
 
 
 
@@ -30,6 +32,22 @@ class GeminiSession:
             self.api_url = 'https://api.gemini.com/v1/'
         else:
             self.api_url = 'https://api.sandbox.gemini.com/v1/'
+
+
+    def load_key(self, path):
+        """ Load key and secret from file.
+
+        Expected file format is key and secret on separate lines.
+        
+        :param path: path to keyfile
+        :type path: str
+        :returns: None
+        
+        """
+        with open(path, 'r') as f:
+            self.api_key = f.readline().strip()
+            self.api_secret = f.readline().strip()
+        return
 
     def get_symbols(self):
         """Returns all available symbols for trading."""      
@@ -282,8 +300,8 @@ class GeminiSession:
 
 
 # Set third argument to True if you are experimenting on api.sandbox.gemini.com
-session = GeminiSession("Y6YTDaUuM4KJgRa6eZMv", "2RprKtHJj9ApDFUXYNVpxZsFK1U2", False)
-
+session = GeminiSession("key", "secret", False)
+session.load_key(os.path.dirname(__file__) + '\..\gemini.key')
 
 
 import krakenex
@@ -292,7 +310,7 @@ import krakenex
 
 #configure api
 k = krakenex.API()
-k.load_key('kraken.key')
+k.load_key(os.path.dirname(__file__) + '\..\kraken.key')
 
 kbalance = k.query_private('Balance')
 kbalance = kbalance['result']
