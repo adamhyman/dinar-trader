@@ -317,10 +317,11 @@ k = krakenex.API()
 k.load_key(os.path.dirname(__file__) + '\..\kraken.key')
 
 
-for x in range(1, 40):
+for x in range(1, 1000):
     print ("")
         
     kbalance = k.query_private('Balance')
+    # print(k.query_private('Balance'))
     kbalance = kbalance['result']
 
     k_usd = float(kbalance["ZUSD"])
@@ -348,8 +349,8 @@ for x in range(1, 40):
     k_bid_eth = float(k_ticker["XETHZUSD"]["b"][0])
 
 
-    k_ask_eth = float(k_ask_eth * 1.003)
-    k_bid_eth = float(k_bid_eth * .997)
+    k_ask_eth = float(k_ask_eth * 1.0026)
+    k_bid_eth = float(k_bid_eth * .9974)
 
     print ("Kraken Bid:  " + str(k_bid_eth))
     print ("Kraken Ask:  " + str(k_ask_eth))
@@ -362,8 +363,8 @@ for x in range(1, 40):
     g_ask_eth = float(gbalance["ask"])
 
 
-    g_ask_eth = float(g_ask_eth * 1.003)
-    g_bid_eth = float(g_bid_eth * .997)
+    g_ask_eth = float(g_ask_eth * 1.0025)
+    g_bid_eth = float(g_bid_eth * .9975)
 
     print ("Gemini Bid:  " + str(g_bid_eth))
     print ("Gemini Ask:  " + str(g_ask_eth))
@@ -371,26 +372,26 @@ for x in range(1, 40):
 
 
     #  Buy Gemini, Sell Kraken
-    if float(k_bid_eth) > float(g_ask_eth) and float(g_usd) > float(400) and float(k_eth) > float(1):
+    if float(k_bid_eth) > float(g_ask_eth) and float(g_usd) > float(100) and float(k_eth) > float(1):
         print("Buying on Gemini, Selling on Kraken")
-        print(session.new_order("ethusd", ".5", "500","buy", "immediate-or-cancel"))
+        print(session.new_order("ethusd", ".001", "500","buy", "immediate-or-cancel"))
         print(k.query_private('AddOrder', {'pair': 'XETHZUSD',
                                  'type': 'sell',
                                  'ordertype': 'market',
                                  'price': '1',
-                                 'volume': '.5'}))
+                                 'volume': '.001'}))
         print("Transactions Complete")
         # sys.exit("Exit")
 
     #  Buy Kraken, Sell Gemini
-    if float(g_bid_eth) > float(k_ask_eth) and float(k_usd) > float(400) and float(g_eth) > float(1):
+    if float(g_bid_eth) > float(k_ask_eth) and float(k_usd) > float(100) and float(g_eth) > float(1):
         print("Buying on Kraken, Selling on Gemini")
-        print(session.new_order("ethusd", ".5", "5","sell", "immediate-or-cancel"))
+        print(session.new_order("ethusd", ".001", "5","sell", "immediate-or-cancel"))
         print(k.query_private('AddOrder', {'pair': 'XETHZUSD',
                                  'type': 'buy',
                                  'ordertype': 'market',
                                  'price': '300',
-                                 'volume': '.5'}))
+                                 'volume': '.001'}))
         print("Transactions Complete")
         # sys.exit("Exit")
 
