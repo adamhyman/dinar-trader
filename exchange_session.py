@@ -27,7 +27,17 @@ class exchange_session(object):
             print ("Gemini session configured.")
         elif (exchange == ""):
             raise ValueError("Missing exchange name.")
-			
+
+    # Returns the balance of account in a dict format
+    def get_balances(self):
+        if (self.exchange.lower() == "kraken"):
+            balance = self.session.query_private('Balance')['result']
+            # TO DO: Find proper symbol for bitcoin on Kraken
+            return {'USD':float(balance["ZUSD"]), 'ETH':float(balance["XETH"]), 'BTC':0.0}
+        elif (self.exchange.lower() == "gemini"):
+            balance = self.session.get_balances()
+            return {'USD':float(balance[1]["available"]), 'ETH':float(balance[2]["available"]), 'BTC':float(balance[0]["available"])}
+            
     def get_balance_usd(self):
         if (self.exchange.lower() == "kraken"):
             return float(self.session.query_private('Balance')['result']["ZUSD"])
@@ -42,7 +52,7 @@ class exchange_session(object):
             
     def get_balance_btc(self):
         if (self.exchange.lower() == "kraken"):
-            return float(self.session.query_private('Balance')['result']["GBTC"])
+            return float(0.0)
         elif (self.exchange.lower() == "gemini"):
             return float(self.session.get_balances()[0]["available"])
 

@@ -11,10 +11,14 @@ gemini = exchange_session(exchange='gemini', path_to_key=gemini_key)
 while True:
    print ("Fetching exchange data...")
 
-   print ("Kraken USD: %s" % kraken.get_balance_usd())
-   print ("Kraken ETH: %s" % kraken.get_balance_eth())
-   print ("Gemini USD: %s" % gemini.get_balance_usd())
-   print ("Gemini ETH: %s" % gemini.get_balance_eth())
+   kbalances = kraken.get_balances()
+   gbalances = gemini.get_balances()
+   print ("Kraken USD: %s" % kbalances["USD"])
+   print ("Kraken ETH: %s" % kbalances["ETH"])
+   print ("Kraken BTC: %s" % kbalances["BTC"])
+   print ("Gemini USD: %s" % gbalances["USD"])
+   print ("Gemini ETH: %s" % gbalances["ETH"])
+   print ("Gemini BTC: %s" % gbalances["BTC"])
 
    k_ticker = kraken.session.query_public('Ticker',{'pair': 'XETHZUSD'})
    k_ticker = k_ticker['result']
