@@ -1,6 +1,8 @@
 [submodule "python3-krakenex"]
 	path = python3-krakenex
 	url = https://github.com/veox/python3-krakenex.git
+    ignore = dirty
 [submodule "geminiapi"]
 	path = geminiapi
 	url = https://github.com/drkhaira/geminiapi.git
+    ignore = dirty
