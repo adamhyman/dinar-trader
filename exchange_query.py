@@ -2,8 +2,6 @@ import os
 from time import sleep
 from exchange_session import exchange_session
 
-# Read in key files
-# TO DO: Put this as a separate function
 kraken_key = '../kraken.key'
 gemini_key = '../gemini.key'
 
