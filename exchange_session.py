@@ -5,7 +5,7 @@
 import krakenex
 from geminiapi.gemini import GeminiSession 
 
-class exchangeSession(object):
+class exchange_session(object):
     ## Defines an exchange API session
     
     def __init__(self, exchange='', path_to_key=''):

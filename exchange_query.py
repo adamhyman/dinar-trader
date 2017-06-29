@@ -1,14 +1,14 @@
 import os
 from time import sleep
-from exchangeSession import exchangeSession
+from exchange_session import exchange_session
 
 # Read in key files
 # TO DO: Put this as a separate function
 kraken_key = '../kraken.key'
 gemini_key = '../gemini.key'
 
-kraken = exchangeSession(exchange='kraken', path_to_key=kraken_key)
-gemini = exchangeSession(exchange='gemini', path_to_key=gemini_key)
+kraken = exchange_session(exchange='kraken', path_to_key=kraken_key)
+gemini = exchange_session(exchange='gemini', path_to_key=gemini_key)
 
 while True:
    print ("Fetching exchange data...")
