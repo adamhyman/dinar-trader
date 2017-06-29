@@ -4,7 +4,8 @@
 
 import importlib
 krakenex = importlib.import_module("python3-krakenex.krakenex")
-from geminiapi.gemini import GeminiSession 
+gdax = importlib.import_module("gdax-python")
+from geminiapi.gemini import GeminiSession
 
 class exchange_session(object):
     ## Defines an exchange API session

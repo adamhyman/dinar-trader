@@ -6,3 +6,6 @@
 	path = geminiapi
 	url = https://github.com/drkhaira/geminiapi.git
     ignore = dirty
+[submodule "gdax-python"]
+	path = gdax-python
+	url = https://github.com/danpaquin/gdax-python.git
