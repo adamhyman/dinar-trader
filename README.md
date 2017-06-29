@@ -1,4 +1,4 @@
 # dinar-trader
 Trade Dinars
 
-Note: exchange_query.py must be run with IDLE
+Run exchange_query.py in the root directory of this repository
