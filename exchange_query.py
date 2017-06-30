@@ -57,11 +57,11 @@ while True:
 ##   if float(g_bid_eth) > float(k_ask_eth) and float(k_usd) > float(100) and float(g_eth) > float(1):
 ##      print("Buying on Kraken, Selling on Gemini")
 ##      print(gemini.session.new_order("ethusd", ".001", "5","sell", "immediate-or-cancel"))
-##      print(kraken..query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '300', 'volume': '.001'}))
+##      print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '300', 'volume': '.001'}))
 ##      print("Transactions Complete")
 ##      # sys.exit("Exit")
 ##      bool_pause = False
    print("")
 
    if bool_pause:
-       time.sleep(30)
+       sleep(30)
