@@ -51,7 +51,7 @@ class exchange_session(object):
             
     def get_balance_btc(self):
         if (self.exchange.lower() == "kraken"):
-            return float(self.session.query_private('Balance')['result']["GBTC"])
+            return float(self.session.query_private('Balance')['result']["XXBT"])
         elif (self.exchange.lower() == "gemini"):
             return float(self.session.get_balances()[0]["available"])
 
