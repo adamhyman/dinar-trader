@@ -47,7 +47,7 @@ while True:
 
    bool_pause = True
 ##   #Buy Gemini, Sell Kraken
-##   if float(k_bid_eth) > float(g_ask_eth) and float(g_usd) > float(100) and float(k_eth) > float(1):
+##   if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(100) and kbalances["ETH"] > float(1):
 ##      print("Buying on Gemini, Selling on Kraken")
 ##      print(gemini.session.new_order("ethusd", ".001", "500","buy", "immediate-or-cancel"))
 ##      print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '1', 'volume': '.001'}))
@@ -56,7 +56,7 @@ while True:
 ##      bool_pause = False
 ##
 ##   #Buy Kraken, Sell Gemini
-##   if float(g_bid_eth) > float(k_ask_eth) and float(k_usd) > float(100) and float(g_eth) > float(1):
+##   if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(100) and gbalances["ETH"] > float(1):
 ##      print("Buying on Kraken, Selling on Gemini")
 ##      print(gemini.session.new_order("ethusd", ".001", "5","sell", "immediate-or-cancel"))
 ##      print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '300', 'volume': '.001'}))
