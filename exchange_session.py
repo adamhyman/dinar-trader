@@ -32,8 +32,7 @@ class exchange_session(object):
     def get_balances(self):
         if (self.exchange.lower() == "kraken"):
             balance = self.session.query_private('Balance')['result']
-            # TO DO: Find proper symbol for bitcoin on Kraken
-            return {'USD':float(balance["ZUSD"]), 'ETH':float(balance["XETH"]), 'BTC':float(balance["GBTC"])}
+            return {'USD':float(balance["ZUSD"]), 'ETH':float(balance["XETH"]), 'BTC':float(balance["XXBT"])}
         elif (self.exchange.lower() == "gemini"):
             balance = self.session.get_balances()
             return {'USD':float(balance[1]["available"]), 'ETH':float(balance[2]["available"]), 'BTC':float(balance[0]["available"])}
