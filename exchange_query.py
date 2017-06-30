@@ -4,9 +4,11 @@ from exchange_session import exchange_session
 
 kraken_key = '../kraken.key'
 gemini_key = '../gemini.key'
+gdax_key = '../gdax.key'
 
 kraken = exchange_session(exchange='kraken', path_to_key=kraken_key)
 gemini = exchange_session(exchange='gemini', path_to_key=gemini_key)
+gdax = exchange_session(exchange='gdax', path_to_key=gemini_key)
 
 while True:
    print ("Fetching exchange data...")
