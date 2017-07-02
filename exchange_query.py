@@ -51,6 +51,7 @@ while True:
       print(gemini.session.new_order("ethusd", ".001", "1000","buy", "immediate-or-cancel"))
       print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
       print("Transactions Complete")
+      sleep(120)
       continue
 
    # Buy Kraken, Sell Gemini
@@ -59,11 +60,12 @@ while True:
       print(gemini.session.new_order("ethusd", ".001", "20","sell", "immediate-or-cancel"))
       print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.001'}))
       print("Transactions Complete")
+      sleep(120)
       continue
    print("")
 
-   print ("No opportunities found. Sleeping for 45 seconds.")
+   print ("No opportunities found. Sleeping for 120 seconds.")
    print("")
-   sleep(45)
+   sleep(120)
 
 logfile.close()
