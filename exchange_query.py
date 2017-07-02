@@ -10,8 +10,6 @@ kraken = exchange_session(exchange='kraken', path_to_key=kraken_key)
 gemini = exchange_session(exchange='gemini', path_to_key=gemini_key)
 gdax = exchange_session(exchange='gdax', path_to_key=gemini_key)
 
-bool_pause = True
-
 while True:
    print ("Fetching exchange data...")
 
@@ -44,8 +42,7 @@ while True:
       print(gemini.session.new_order("ethusd", ".001", "1000","buy", "immediate-or-cancel"))
       print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
       print("Transactions Complete")
-      # sys.exit("Exit")
-      bool_pause = False
+      continue
 
    # Buy Kraken, Sell Gemini
    if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(100) and gbalances["ETH"] > float(1):
@@ -53,9 +50,9 @@ while True:
       print(gemini.session.new_order("ethusd", ".001", "20","sell", "immediate-or-cancel"))
       print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.001'}))
       print("Transactions Complete")
-      # sys.exit("Exit")
-      bool_pause = False
+      continue
    print("")
 
-   if bool_pause:
-       sleep(30)
+   print ("No opportunities found. Sleeping for 30 seconds.")
+   print("")
+   sleep(30)
