@@ -10,9 +10,12 @@ kraken = exchange_session(exchange='kraken', path_to_key=kraken_key)
 gemini = exchange_session(exchange='gemini', path_to_key=gemini_key)
 gdax = exchange_session(exchange='gdax', path_to_key=gemini_key)
 
+bool_pause = True
+
 while True:
    print ("Fetching exchange data...")
 
+   # Get the balances of the accounts
    kbalances = kraken.get_balances()
    gbalances = gemini.get_balances()
    print ("Kraken USD: %s" % kbalances["USD"])
@@ -21,31 +24,20 @@ while True:
    print ("Gemini USD: %s" % gbalances["USD"])
    print ("Gemini ETH: %s" % gbalances["ETH"])
    print ("Gemini BTC: %s" % gbalances["BTC"])
-
-   k_ticker = kraken.session.query_public('Ticker',{'pair': 'XETHZUSD'})
-   k_ticker = k_ticker['result']
-   k_ask_eth = float(k_ticker["XETHZUSD"]["a"][0])
-   k_bid_eth = float(k_ticker["XETHZUSD"]["b"][0])
-
-   k_ask_eth = float(k_ask_eth * 1.0026)
-   k_bid_eth = float(k_bid_eth * .9974)
-
+   
+   # Get the bid and asking prices
+   k_trade_info = kraken.get_trade_info("ETHUSD")
+   k_ask_eth = k_trade_info["ask"] * 1.0026
+   k_bid_eth = k_trade_info["bid"] * 0.9974
+   g_trade_info = gemini.get_trade_info("ETHUSD")
+   g_ask_eth = g_trade_info["ask"] * 1.0025
+   g_bid_eth = g_trade_info["bid"] * 0.9975
+   
    print ("Kraken Bid:  " + str(k_bid_eth))
    print ("Kraken Ask:  " + str(k_ask_eth))
-
-   gbalance = gemini.session.get_ticker("ethusd")
-   #print(gemini.session.get_ticker("ethusd"))
-
-   g_bid_eth = float(gbalance["bid"])
-   g_ask_eth = float(gbalance["ask"])
-
-   g_ask_eth = float(g_ask_eth * 1.0025)
-   g_bid_eth = float(g_bid_eth * .9975)
-
    print ("Gemini Bid:  " + str(g_bid_eth))
    print ("Gemini Ask:  " + str(g_ask_eth))
 
-   bool_pause = True
 ##   #Buy Gemini, Sell Kraken
 ##   if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(100) and kbalances["ETH"] > float(1):
 ##      print("Buying on Gemini, Selling on Kraken")

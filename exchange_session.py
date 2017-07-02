@@ -37,6 +37,19 @@ class exchange_session(object):
             balance = self.session.get_balances()
             return {'USD':float(balance[1]["available"]), 'ETH':float(balance[2]["available"]), 'BTC':float(balance[0]["available"])}
             
+    def get_trade_info(self, ticker_pair="ETHUSD"):
+        ## Returns recent trading activity for a symbol
+        ## Valid ticker pairs: 
+        ## 1. "ETHUSD"
+        if (self.exchange.lower() == "kraken"):
+            if (ticker_pair == "ETHUSD"):
+                k_ticker = self.session.query_public('Ticker',{'pair': 'XETHZUSD'})['result']
+                return {'ask':float(k_ticker["XETHZUSD"]["a"][0]), 'bid':float(k_ticker["XETHZUSD"]["b"][0])}
+        elif (self.exchange.lower() == "gemini"):
+            if (ticker_pair == "ETHUSD"):
+                gbalance = self.session.get_ticker("ethusd")
+                return {'ask':float(gbalance["ask"]), 'bid':float(gbalance["bid"])}
+            
     def get_balance_usd(self):
         if (self.exchange.lower() == "kraken"):
             return float(self.session.query_private('Balance')['result']["ZUSD"])
