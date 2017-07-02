@@ -27,6 +27,13 @@ class exchange_session(object):
             print ("Gemini session configured.")
         elif (exchange == ""):
             raise ValueError("Missing exchange name.")
+            
+    def get_pair_name(self, trade_name):
+        if (trade_name == "ETHUSD"):
+            if (self.exchange.lower() == "kraken"):
+                return "XETHZUSD"
+            if (self.exchange.lower() == "gemini"):
+                return "ethusd"
 
     # Returns the balance of account in a dict format
     def get_balances(self):
@@ -43,11 +50,11 @@ class exchange_session(object):
         ## 1. "ETHUSD"
         if (self.exchange.lower() == "kraken"):
             if (ticker_pair == "ETHUSD"):
-                k_ticker = self.session.query_public('Ticker',{'pair': 'XETHZUSD'})['result']
-                return {'ask':float(k_ticker["XETHZUSD"]["a"][0]), 'bid':float(k_ticker["XETHZUSD"]["b"][0])}
+                k_ticker = self.session.query_public('Ticker',{'pair': self.get_pair_name("ETHUSD")})['result']
+                return {'ask':float(k_ticker[self.get_pair_name("ETHUSD")]["a"][0]), 'bid':float(k_ticker[self.get_pair_name("ETHUSD")]["b"][0])}
         elif (self.exchange.lower() == "gemini"):
             if (ticker_pair == "ETHUSD"):
-                gbalance = self.session.get_ticker("ethusd")
+                gbalance = self.session.get_ticker(self.get_pair_name("ETHUSD"))
                 return {'ask':float(gbalance["ask"]), 'bid':float(gbalance["bid"])}
             
     def get_balance_usd(self):
