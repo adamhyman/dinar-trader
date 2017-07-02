@@ -1,5 +1,7 @@
 import os
+import csv
 from time import sleep
+from datetime import datetime
 from exchange_session import exchange_session
 
 kraken_key = '../kraken.key'
@@ -9,6 +11,11 @@ gdax_key = '../gdax.key'
 kraken = exchange_session(exchange='kraken', path_to_key=kraken_key)
 gemini = exchange_session(exchange='gemini', path_to_key=gemini_key)
 gdax = exchange_session(exchange='gdax', path_to_key=gemini_key)
+
+# Set up CSV log file and write headers
+logfile = open("log.csv", 'w', newline='')
+log_writer = csv.writer(logfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+log_writer.writerow(['Date', 'Time', 'Kraken Balance (USD)', 'Kraken Balance (ETH)', 'Kraken Balance (BTC)', 'Gemini Balance (USD)', 'Gemini Balance (ETH)', 'Gemini Balance (BTC)', 'Kraken ETHUSD Ask', 'Kraken ETHUSD Bid', 'Gemini ETHUSD Ask', 'Gemini ETHUSD Bid',])
 
 while True:
    print ("Fetching exchange data...")
@@ -35,6 +42,8 @@ while True:
    print ("Kraken Ask:  " + str(k_ask_eth))
    print ("Gemini Bid:  " + str(g_bid_eth))
    print ("Gemini Ask:  " + str(g_ask_eth))
+   
+   log_writer.writerow([datetime.utcnow().strftime('%Y-%m-%d'), datetime.utcnow().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
 
    # Buy Gemini, Sell Kraken
    if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(100) and kbalances["ETH"] > float(1):
@@ -53,6 +62,8 @@ while True:
       continue
    print("")
 
-   print ("No opportunities found. Sleeping for 30 seconds.")
+   print ("No opportunities found. Sleeping for 45 seconds.")
    print("")
-   sleep(30)
+   sleep(45)
+
+logfile.close()
