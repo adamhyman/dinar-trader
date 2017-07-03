@@ -3,14 +3,16 @@
 ## Class for interfaces with different exchanges
 
 import importlib
+import http.client
 krakenex = importlib.import_module("python3-krakenex.krakenex")
 gdax = importlib.import_module("gdax-python")
 from geminiapi.gemini import GeminiSession
 
+# Constants
+sleep_time_sec = 15
+
 class exchange_session(object):
-    ## Defines an exchange API session
-    
-    
+    ## Defines an exchange API session    
     def __init__(self, exchange='', path_to_key='', debug=True):
         # Self types
         self.exchange = exchange
@@ -42,12 +44,21 @@ class exchange_session(object):
     def get_balances(self):
         ## Returns the balance of account in a dict format
         if (self.exchange.lower() == "kraken"):
-            balance = self.session.query_private('Balance')['result']
-            if self.debug:
-                print ("Kraken USD: %s" % balance["ZUSD"])
-                print ("Kraken ETH: %s" % balance["XETH"])
-                print ("Kraken BTC: %s" % balance["XXBT"])
-            return {'USD':float(balance["ZUSD"]), 'ETH':float(balance["XETH"]), 'BTC':float(balance["XXBT"])}
+            ## Note: Kraken has a known issue of timing out every so often
+            ##       so this is addressed by catching a HTTP 504 error and
+            ##       retrying the query
+            while True:
+                try:
+                    balance = self.session.query_private('Balance')['result']
+                except http.client.HTTPException as e:
+                    print ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % e, sleep_time_sec)
+                    sleep(sleep_time_sec)
+                    continue
+                if self.debug:
+                    print ("Kraken USD: %s" % balance["ZUSD"])
+                    print ("Kraken ETH: %s" % balance["XETH"])
+                    print ("Kraken BTC: %s" % balance["XXBT"])
+                return {'USD':float(balance["ZUSD"]), 'ETH':float(balance["XETH"]), 'BTC':float(balance["XXBT"])}
         elif (self.exchange.lower() == "gemini"):
             balance = self.session.get_balances()
             if self.debug:
