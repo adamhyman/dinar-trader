@@ -4,6 +4,9 @@ from time import sleep
 from datetime import datetime
 from exchange_session import exchange_session
 
+# Constants
+sleep_time_sec = 15
+
 # Key locations
 kraken_key = '../kraken.key'
 gemini_key = '../gemini.key'
@@ -25,27 +28,31 @@ kbalances = kraken.get_balances()
 gbalances = gemini.get_balances()
 print ("")
 
-## ################## ##
-## Run main code here ##
-## ################## ##
 print ("Running exchange queries and looking for opportunities.")
 
 while True:
    # Get the bid and asking prices
    print ("Getting prices.")
-   k_trade_info = kraken.get_trade_info("ETHUSD")
-   k_ask_eth = k_trade_info["ask"] * 1.0026
-   k_bid_eth = k_trade_info["bid"] * 0.9974
-   g_trade_info = gemini.get_trade_info("ETHUSD")
-   g_ask_eth = g_trade_info["ask"] * 1.0025
-   g_bid_eth = g_trade_info["bid"] * 0.9975
-
-   print ("Kraken Bid:  " + str(k_bid_eth))
-   print ("Kraken Ask:  " + str(k_ask_eth))
-   print ("Gemini Bid:  " + str(g_bid_eth))
-   print ("Gemini Ask:  " + str(g_ask_eth))
-   print ("")
-
+   try:
+        k_trade_info = kraken.get_trade_info("ETHUSD")
+        k_ask_eth = k_trade_info["ask"] * 1.0026
+        k_bid_eth = k_trade_info["bid"] * 0.9974
+        g_trade_info = gemini.get_trade_info("ETHUSD")
+        g_ask_eth = g_trade_info["ask"] * 1.0025
+        g_bid_eth = g_trade_info["bid"] * 0.9975
+        
+        print ("Kraken Bid:  %s" % k_bid_eth)
+        print ("Kraken Ask:  %s" % k_ask_eth)
+        print ("Gemini Bid:  %s" % g_bid_eth)
+        print ("Gemini Ask:  %s" % g_ask_eth)
+        print ("")
+   except Exception as e:
+        print ("Caught this error:")
+        print (e)
+        print ("Restarting loop.")
+        sleep(sleep_time_sec)
+        continue
+        
    log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
 
    # Buy Gemini, Sell Kraken
@@ -54,7 +61,7 @@ while True:
         print(gemini.session.new_order("ethusd", ".001", "1000","buy", "immediate-or-cancel"))
         print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
         print("Transactions Complete")
-        sleep(120)
+        sleep(sleep_time_sec)
         kbalances = kraken.get_balances()
         gbalances = gemini.get_balances()
 
@@ -64,13 +71,13 @@ while True:
         print(gemini.session.new_order("ethusd", ".001", "20","sell", "immediate-or-cancel"))
         print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.001'}))
         print("Transactions Complete")
-        sleep(120)
+        sleep(sleep_time_sec)
         kbalances = kraken.get_balances()
         gbalances = gemini.get_balances()
         continue
     
-   print ("No opportunities found. Sleeping for 90 seconds.")
+   print ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
    print ("")
-   sleep(90)
+   sleep(sleep_time_sec)
 
 logfile.close()

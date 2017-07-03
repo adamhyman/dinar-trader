@@ -21,6 +21,7 @@ class exchange_session(object):
             self.session = krakenex.API()
             self.session.load_key(path_to_key)
             print ("Kraken session configured.")
+        # Create a Gemini exchange session object
         elif (exchange.lower() == "gemini"):
             with open(path_to_key, 'r') as f:
                 key = f.readline().strip()
@@ -31,14 +32,15 @@ class exchange_session(object):
             raise ValueError("Missing exchange name.")
             
     def get_pair_name(self, trade_name):
+        ## Returns the proper trade name per exchange
         if (trade_name == "ETHUSD"):
             if (self.exchange.lower() == "kraken"):
                 return "XETHZUSD"
             if (self.exchange.lower() == "gemini"):
                 return "ethusd"
 
-    # Returns the balance of account in a dict format
     def get_balances(self):
+        ## Returns the balance of account in a dict format
         if (self.exchange.lower() == "kraken"):
             balance = self.session.query_private('Balance')['result']
             if self.debug:
