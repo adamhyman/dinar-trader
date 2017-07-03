@@ -1,5 +1,6 @@
 import os
 import csv
+import http.client
 from time import sleep
 from datetime import datetime
 from exchange_session import exchange_session
@@ -46,10 +47,8 @@ while True:
         print ("Gemini Bid:  %s" % g_bid_eth)
         print ("Gemini Ask:  %s" % g_ask_eth)
         print ("")
-   except Exception as e:
-        print ("Caught this error:")
-        print (e)
-        print ("Restarting loop.")
+   except http.client.HTTPException as e:
+        print ("Error: HTTP %s. Restarting Loop." % e)
         sleep(sleep_time_sec)
         continue
         
@@ -62,8 +61,14 @@ while True:
         print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
         print("Transactions Complete")
         sleep(sleep_time_sec)
-        kbalances = kraken.get_balances()
-        gbalances = gemini.get_balances()
+        try:
+            kbalances = kraken.get_balances()
+            gbalances = gemini.get_balances()
+        except http.client.HTTPException as e:
+            # Server timed out. Wait a little and start loop again
+            print ("Error: HTTP %s. Restarting Loop." % e)
+            sleep(sleep_time_sec)
+            continue
 
    # Buy Kraken, Sell Gemini
    if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(100) and gbalances["ETH"] > float(1):
@@ -71,10 +76,14 @@ while True:
         print(gemini.session.new_order("ethusd", ".001", "20","sell", "immediate-or-cancel"))
         print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.001'}))
         print("Transactions Complete")
-        sleep(sleep_time_sec)
-        kbalances = kraken.get_balances()
-        gbalances = gemini.get_balances()
-        continue
+        try:
+            kbalances = kraken.get_balances()
+            gbalances = gemini.get_balances()
+        except http.client.HTTPException as e:
+            # Server timed out. Wait a little and start loop again
+            print ("Error: HTTP %s. Restarting Loop." % e)
+            sleep(sleep_time_sec)
+            continue
     
    print ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
    print ("")
