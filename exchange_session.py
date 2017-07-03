@@ -4,6 +4,7 @@
 
 import importlib
 import http.client
+from time import sleep
 krakenex = importlib.import_module("python3-krakenex.krakenex")
 gdax = importlib.import_module("gdax-python")
 from geminiapi.gemini import GeminiSession
@@ -51,7 +52,7 @@ class exchange_session(object):
                 try:
                     balance = self.session.query_private('Balance')['result']
                 except http.client.HTTPException as e:
-                    print ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % e, sleep_time_sec)
+                    print ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
                     sleep(sleep_time_sec)
                     continue
                 if self.debug:
@@ -72,9 +73,18 @@ class exchange_session(object):
         ## Valid ticker pairs: 
         ## 1. "ETHUSD"
         if (self.exchange.lower() == "kraken"):
-            if (ticker_pair == "ETHUSD"):
-                k_ticker = self.session.query_public('Ticker',{'pair': self.get_pair_name("ETHUSD")})['result']
-                return {'ask':float(k_ticker[self.get_pair_name("ETHUSD")]["a"][0]), 'bid':float(k_ticker[self.get_pair_name("ETHUSD")]["b"][0])}
+            ## Note: Kraken has a known issue of timing out every so often
+            ##       so this is addressed by catching a HTTP 504 error and
+            ##       retrying the query
+            while True:
+                try:
+                    if (ticker_pair == "ETHUSD"):
+                        k_ticker = self.session.query_public('Ticker',{'pair': self.get_pair_name("ETHUSD")})['result']
+                        return {'ask':float(k_ticker[self.get_pair_name("ETHUSD")]["a"][0]), 'bid':float(k_ticker[self.get_pair_name("ETHUSD")]["b"][0])}
+                except http.client.HTTPException as e:
+                    print ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+                    sleep(sleep_time_sec)
+                    continue
         elif (self.exchange.lower() == "gemini"):
             if (ticker_pair == "ETHUSD"):
                 gbalance = self.session.get_ticker(self.get_pair_name("ETHUSD"))
