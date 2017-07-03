@@ -60,7 +60,6 @@ while True:
         print(gemini.session.new_order("ethusd", ".001", "1000","buy", "immediate-or-cancel"))
         print(kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
         print("Transactions Complete")
-        sleep(sleep_time_sec)
         try:
             kbalances = kraken.get_balances()
             gbalances = gemini.get_balances()
