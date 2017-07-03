@@ -65,7 +65,7 @@ while True:
    print ("Gemini Ask:  " + str(g_ask_eth))
    print ("")
    
-   log_writer.writerow([datetime.utcnow().strftime('%Y-%m-%d'), datetime.utcnow().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
+   log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
 
    # Buy Gemini, Sell Kraken
    if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(100) and kbalances["ETH"] > float(1):
@@ -87,8 +87,8 @@ while True:
       get_balances()
       continue
 
-   print ("No opportunities found. Sleeping for 60 seconds.")
+   print ("No opportunities found. Sleeping for 90 seconds.")
    print("")
-   sleep(60)
+   sleep(90)
 
 logfile.close()
