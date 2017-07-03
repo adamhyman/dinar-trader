@@ -11,10 +11,10 @@ class exchange_session(object):
     ## Defines an exchange API session
     
     
-    def __init__(self, exchange='', path_to_key=''):
+    def __init__(self, exchange='', path_to_key='', debug=True):
         # Self types
         self.exchange = exchange
-        self.debug = True   # Allow debugging print messages
+        self.debug = debug   # Allow debugging print messages
         
         # Create a Kraken exchange session object
         if (exchange.lower() == "kraken"):
