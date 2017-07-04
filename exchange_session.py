@@ -3,6 +3,7 @@
 ## Class for interfaces with different exchanges
 
 import importlib
+import logging
 import http.client
 from time import sleep
 krakenex = importlib.import_module("python3-krakenex.krakenex")
@@ -11,6 +12,7 @@ from geminiapi.gemini import GeminiSession
 
 # Constants
 sleep_time_sec = 15
+root = logging.getLogger()
 
 class exchange_session(object):
     ## Defines an exchange API session    
@@ -23,14 +25,14 @@ class exchange_session(object):
         if (exchange.lower() == "kraken"):
             self.session = krakenex.API()
             self.session.load_key(path_to_key)
-            print ("Kraken session configured.")
+            logging.info ("Kraken session configured.")
         # Create a Gemini exchange session object
         elif (exchange.lower() == "gemini"):
             with open(path_to_key, 'r') as f:
                 key = f.readline().strip()
                 secret = f.readline().strip()
                 self.session = GeminiSession(key, secret, False)
-            print ("Gemini session configured.")
+            logging.info ("Gemini session configured.")
         elif (exchange == ""):
             raise ValueError("Missing exchange name.")
             
@@ -52,20 +54,20 @@ class exchange_session(object):
                 try:
                     balance = self.session.query_private('Balance')['result']
                 except http.client.HTTPException as e:
-                    print ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+                    logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
                     sleep(sleep_time_sec)
                     continue
                 if self.debug:
-                    print ("Kraken USD: %s" % balance["ZUSD"])
-                    print ("Kraken ETH: %s" % balance["XETH"])
-                    print ("Kraken BTC: %s" % balance["XXBT"])
+                    logging.info ("Kraken USD: %s" % balance["ZUSD"])
+                    logging.info ("Kraken ETH: %s" % balance["XETH"])
+                    logging.info ("Kraken BTC: %s" % balance["XXBT"])
                 return {'USD':float(balance["ZUSD"]), 'ETH':float(balance["XETH"]), 'BTC':float(balance["XXBT"])}
         elif (self.exchange.lower() == "gemini"):
             balance = self.session.get_balances()
             if self.debug:
-                print ("Gemini USD: %s" % balance[1]["available"])
-                print ("Gemini ETH: %s" % balance[2]["available"])
-                print ("Gemini BTC: %s" % balance[0]["available"])
+                logging.info ("Gemini USD: %s" % balance[1]["available"])
+                logging.info ("Gemini ETH: %s" % balance[2]["available"])
+                logging.info ("Gemini BTC: %s" % balance[0]["available"])
             return {'USD':float(balance[1]["available"]), 'ETH':float(balance[2]["available"]), 'BTC':float(balance[0]["available"])}
             
     def get_trade_info(self, ticker_pair="ETHUSD"):
@@ -82,7 +84,7 @@ class exchange_session(object):
                         k_ticker = self.session.query_public('Ticker',{'pair': self.get_pair_name("ETHUSD")})['result']
                         return {'ask':float(k_ticker[self.get_pair_name("ETHUSD")]["a"][0]), 'bid':float(k_ticker[self.get_pair_name("ETHUSD")]["b"][0])}
                 except http.client.HTTPException as e:
-                    print ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+                    logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
                     sleep(sleep_time_sec)
                     continue
         elif (self.exchange.lower() == "gemini"):
