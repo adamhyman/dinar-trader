@@ -44,61 +44,65 @@ logging.info ("")
 logging.info ("Running exchange queries and looking for opportunities.")
 
 while True:
-   # Get the bid and asking prices
-   logging.info ("Getting prices.")
-   k_trade_info = kraken.get_trade_info("ETHUSD")
-   k_ask_eth = k_trade_info["ask"] * 1.0026
-   k_bid_eth = k_trade_info["bid"] * 0.9974
-   g_trade_info = gemini.get_trade_info("ETHUSD")
-   g_ask_eth = g_trade_info["ask"] * 1.0025
-   g_bid_eth = g_trade_info["bid"] * 0.9975
+   try:
+       # Get the bid and asking prices
+       logging.info ("Getting prices.")
+       k_trade_info = kraken.get_trade_info("ETHUSD")
+       k_ask_eth = k_trade_info["ask"] * 1.0026
+       k_bid_eth = k_trade_info["bid"] * 0.9974
+       g_trade_info = gemini.get_trade_info("ETHUSD")
+       g_ask_eth = g_trade_info["ask"] * 1.0025
+       g_bid_eth = g_trade_info["bid"] * 0.9975
 
-   logging.info ("Kraken Bid:  %s" % k_bid_eth)
-   logging.info ("Kraken Ask:  %s" % k_ask_eth)
-   logging.info ("Gemini Bid:  %s" % g_bid_eth)
-   logging.info ("Gemini Ask:  %s" % g_ask_eth)
-   logging.info ("")
-   
-   log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
+       logging.info ("Kraken Bid:  %s" % k_bid_eth)
+       logging.info ("Kraken Ask:  %s" % k_ask_eth)
+       logging.info ("Gemini Bid:  %s" % g_bid_eth)
+       logging.info ("Gemini Ask:  %s" % g_ask_eth)
+       logging.info ("")
+       
+       log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
 
-   # Buy Gemini, Sell Kraken
-   if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(100) and kbalances["ETH"] > float(1):
-        logging.info ("Buying on Gemini, Selling on Kraken")
-        # TO DO: Handle the exception in exchange_session.py
-        try:
-            logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
-        except http.client.HTTPException as e:
-            logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
-            sleep(sleep_time_sec)
-            continue
-        #except Exception as e:
-        #    logging.info ("Unexpected error: %s. Restarting Loop." % e)
-        #    continue
-        logging.info (gemini.session.new_order("ethusd", ".001", "1000","buy", "immediate-or-cancel"))
-        logging.info ("Transactions Complete")
-        kbalances = kraken.get_balances()
-        gbalances = gemini.get_balances()
+       # Buy Gemini, Sell Kraken
+       if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(100) and kbalances["ETH"] > float(1):
+            logging.info ("Buying on Gemini, Selling on Kraken")
+            # TO DO: Handle the exception in exchange_session.py
+            try:
+                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
+            except http.client.HTTPException as e:
+                logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+                sleep(sleep_time_sec)
+                continue
+            #except Exception as e:
+            #    logging.info ("Unexpected error: %s. Restarting Loop." % e)
+            #    continue
+            logging.info (gemini.session.new_order("ethusd", ".001", "1000","buy", "immediate-or-cancel"))
+            logging.info ("Transactions Complete")
+            kbalances = kraken.get_balances()
+            gbalances = gemini.get_balances()
 
-   # Buy Kraken, Sell Gemini
-   if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(100) and gbalances["ETH"] > float(1):
-        logging.info ("Buying on Kraken, Selling on Gemini")
-        # TO DO: Handle the exception in exchange_session.py
-        try:
-            logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.001'}))
-        except http.client.HTTPException as e:
-            logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
-            sleep(sleep_time_sec)
-            continue
-        #except Exception as e:
-        #    logging.info ("Unexpected error: %s. Restarting Loop." % e)
-        #    continue
-        logging.info (gemini.session.new_order("ethusd", ".001", "20","sell", "immediate-or-cancel"))
-        logging.info ("Transactions Complete")
-        kbalances = kraken.get_balances()
-        gbalances = gemini.get_balances()
-    
-   logging.info ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
-   logging.info ("")
-   sleep(sleep_time_sec)
+       # Buy Kraken, Sell Gemini
+       if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(100) and gbalances["ETH"] > float(1):
+            logging.info ("Buying on Kraken, Selling on Gemini")
+            # TO DO: Handle the exception in exchange_session.py
+            try:
+                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.001'}))
+            except http.client.HTTPException as e:
+                logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+                sleep(sleep_time_sec)
+                continue
+            #except Exception as e:
+            #    logging.info ("Unexpected error: %s. Restarting Loop." % e)
+            #    continue
+            logging.info (gemini.session.new_order("ethusd", ".001", "20","sell", "immediate-or-cancel"))
+            logging.info ("Transactions Complete")
+            kbalances = kraken.get_balances()
+            gbalances = gemini.get_balances()
+        
+       logging.info ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
+       logging.info ("")
+       sleep(sleep_time_sec)
+   except KeyboardInterrupt:
+       print ("Exiting...")
+       break
 
 logfile.close()
