@@ -74,7 +74,7 @@ while True:
                 logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
             except (http.client.HTTPException, socket.timeout) as ex:
                 logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
-                logging.info ("Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+                logging.info ("Sleeping %s seconds and restarting Loop." % (ex, sleep_time_sec))
                 sleep(sleep_time_sec)
                 continue
             logging.info (gemini.session.new_order("ethusd", ".001", "1000","buy", "immediate-or-cancel"))
@@ -90,7 +90,7 @@ while True:
                 logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.001'}))
             except (http.client.HTTPException, socket.timeout) as ex:
                 logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
-                logging.info ("Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+                logging.info ("Sleeping %s seconds and restarting Loop." % (ex, sleep_time_sec))
                 sleep(sleep_time_sec)
                 continue
             logging.info (gemini.session.new_order("ethusd", ".001", "20","sell", "immediate-or-cancel"))
