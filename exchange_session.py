@@ -4,6 +4,7 @@
 
 import importlib
 import logging
+import socket
 import http.client
 from time import sleep
 krakenex = importlib.import_module("python3-krakenex.krakenex")
@@ -53,8 +54,9 @@ class exchange_session(object):
             while True:
                 try:
                     balance = self.session.query_private('Balance')['result']
-                except http.client.HTTPException as e:
-                    logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+                except (http.client.HTTPException, socket.timeout) as ex:
+                    logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
+                    logging.info ("Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
                     sleep(sleep_time_sec)
                     continue
                 if self.debug:
@@ -83,8 +85,9 @@ class exchange_session(object):
                     if (ticker_pair == "ETHUSD"):
                         k_ticker = self.session.query_public('Ticker',{'pair': self.get_pair_name("ETHUSD")})['result']
                         return {'ask':float(k_ticker[self.get_pair_name("ETHUSD")]["a"][0]), 'bid':float(k_ticker[self.get_pair_name("ETHUSD")]["b"][0])}
-                except http.client.HTTPException as e:
-                    logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+                except (http.client.HTTPException, socket.timeout) as ex:
+                    logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
+                    logging.info ("Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
                     sleep(sleep_time_sec)
                     continue
         elif (self.exchange.lower() == "gemini"):

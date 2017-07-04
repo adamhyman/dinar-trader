@@ -2,6 +2,8 @@ import os
 import csv
 import logging
 import sys
+import http.client
+import socket
 from time import sleep
 from datetime import datetime
 from exchange_session import exchange_session
@@ -15,10 +17,12 @@ gemini_key = '../gemini.key'
 gdax_key = '../gdax.key'
 
 # Set up logger
+# This will log all console outputs to a log file (run.log)
+# Note: This is in addition to the CSV output file
+#       as it is used for debugging purposes.
 logging.basicConfig(filename='run.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 root = logging.getLogger()
 root.setLevel(logging.INFO)
-
 ch = logging.StreamHandler(sys.stdout)
 ch.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -68,13 +72,11 @@ while True:
             # TO DO: Handle the exception in exchange_session.py
             try:
                 logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
-            except http.client.HTTPException as e:
-                logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+            except (http.client.HTTPException, socket.timeout) as ex:
+                logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
+                logging.info ("Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
                 sleep(sleep_time_sec)
                 continue
-            #except Exception as e:
-            #    logging.info ("Unexpected error: %s. Restarting Loop." % e)
-            #    continue
             logging.info (gemini.session.new_order("ethusd", ".001", "1000","buy", "immediate-or-cancel"))
             logging.info ("Transactions Complete")
             kbalances = kraken.get_balances()
@@ -86,13 +88,11 @@ while True:
             # TO DO: Handle the exception in exchange_session.py
             try:
                 logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.001'}))
-            except http.client.HTTPException as e:
-                logging.info ("Kraken Error: HTTP %s. Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
+            except (http.client.HTTPException, socket.timeout) as ex:
+                logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
+                logging.info ("Sleeping %s seconds and restarting Loop." % (e, sleep_time_sec))
                 sleep(sleep_time_sec)
                 continue
-            #except Exception as e:
-            #    logging.info ("Unexpected error: %s. Restarting Loop." % e)
-            #    continue
             logging.info (gemini.session.new_order("ethusd", ".001", "20","sell", "immediate-or-cancel"))
             logging.info ("Transactions Complete")
             kbalances = kraken.get_balances()
