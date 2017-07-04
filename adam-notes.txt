@@ -1,6 +1,0 @@
-
-Create repo:
-git clone https://github.com/adamhyman/dinar-trader
-
-Update Submodules:
-git submodule update --init --recursive
