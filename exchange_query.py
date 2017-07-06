@@ -66,41 +66,48 @@ while True:
        
        log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
 
+       found_opportunity = False
+
        # Buy Gemini, Sell Kraken
-       if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(100) and kbalances["ETH"] > float(1):
+       if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(200) and kbalances["ETH"] > float(1):
             logging.info ("Buying on Gemini, Selling on Kraken")
+            found_opportunity = True
             # TO DO: Handle the exception in exchange_session.py
             try:
-                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.001'}))
+                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.04'}))
             except (http.client.HTTPException, socket.timeout) as ex:
                 logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
                 logging.info ("Sleeping %s seconds and restarting Loop." % (sleep_time_sec))
                 sleep(sleep_time_sec)
                 continue
-            logging.info (gemini.session.new_order("ethusd", ".001", "1000","buy", "immediate-or-cancel"))
+            logging.info (gemini.session.new_order("ethusd", ".04", "1000","buy", "immediate-or-cancel"))
             logging.info ("Transactions Complete")
             kbalances = kraken.get_balances()
             gbalances = gemini.get_balances()
 
        # Buy Kraken, Sell Gemini
-       if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(100) and gbalances["ETH"] > float(1):
+       if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(200) and gbalances["ETH"] > float(1):
             logging.info ("Buying on Kraken, Selling on Gemini")
+            found_opportunity = True
             # TO DO: Handle the exception in exchange_session.py
             try:
-                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.001'}))
+                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.04'}))
             except (http.client.HTTPException, socket.timeout) as ex:
                 logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
                 logging.info ("Sleeping %s seconds and restarting Loop." % (sleep_time_sec))
                 sleep(sleep_time_sec)
                 continue
-            logging.info (gemini.session.new_order("ethusd", ".001", "20","sell", "immediate-or-cancel"))
+            logging.info (gemini.session.new_order("ethusd", ".04", "20","sell", "immediate-or-cancel"))
             logging.info ("Transactions Complete")
             kbalances = kraken.get_balances()
             gbalances = gemini.get_balances()
-        
-       logging.info ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
+
+       if not found_opportunity:
+            logging.info ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
+            sleep(sleep_time_sec)
+            
        logging.info ("")
-       sleep(sleep_time_sec)
+
    except KeyboardInterrupt:
        print ("Exiting...")
        break
