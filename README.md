@@ -12,6 +12,9 @@ Run exchange_query.py in the root directory of this repository
 
 ## Installation
 ### GDAX
+
 Requires:
+
 pip install websocket-client
+
 pip install bintrees
