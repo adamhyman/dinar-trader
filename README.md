@@ -4,6 +4,9 @@ Trade Dinars
 ## Create repo
 `git clone https://github.com/adamhyman/dinar-trader`
 
+## Switch branch
+`git checkout develop`
+
 ## Update Submodules
 `git submodule update --init --recursive`
 
