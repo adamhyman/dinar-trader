@@ -1,15 +1,26 @@
+#OORFZU-2IGCQ-K5I7EZ
+#0.492
+#2017-07-06 02:11:59,388 - root - INFO - Getting prices.
+#2017-07-06 02:12:00,074 - root - INFO - Kraken Bid:  270.464958
+#2017-07-06 02:12:00,136 - root - INFO - Kraken Ask:  272.7061974
+#2017-07-06 02:12:00,152 - root - INFO - Gemini Bid:  269.095575
+#2017-07-06 02:12:00,152 - root - INFO - Gemini Ask:  270.45444999999995
+
 import os
 import csv
 import logging
 import sys
 import http.client
 import socket
+import random
+
 from time import sleep
 from datetime import datetime
 from exchange_session import exchange_session
 
 # Constants
 sleep_time_sec = 15
+eth_trade_base = .4     # Rand Uni [0, .1] will be added to this.  This makes tying a pair of buy-and-sell orders together easy, because we can now tie on quantiy.
 
 # Key locations
 kraken_key = '../kraken.key'
@@ -47,8 +58,14 @@ logging.info ("")
 
 logging.info ("Running exchange queries and looking for opportunities.")
 
+
+
 while True:
    try:
+
+       eth_trade_qty = str(round((eth_trade_base + random.randint(1, 100)/1000), 3))
+       print (eth_trade_qty)
+
        # Get the bid and asking prices
        logging.info ("Getting prices.")
        k_trade_info = kraken.get_trade_info("ETHUSD")
@@ -74,13 +91,13 @@ while True:
             found_opportunity = True
             # TO DO: Handle the exception in exchange_session.py
             try:
-                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': '.04'}))
+                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': eth_trade_qty}))
             except (http.client.HTTPException, socket.timeout) as ex:
                 logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
                 logging.info ("Sleeping %s seconds and restarting Loop." % (sleep_time_sec))
                 sleep(sleep_time_sec)
                 continue
-            logging.info (gemini.session.new_order("ethusd", ".04", "1000","buy", "immediate-or-cancel"))
+            logging.info (gemini.session.new_order("ethusd", eth_trade_qty, "1000","buy", "immediate-or-cancel"))
             logging.info ("Transactions Complete")
             kbalances = kraken.get_balances()
             gbalances = gemini.get_balances()
@@ -91,13 +108,13 @@ while True:
             found_opportunity = True
             # TO DO: Handle the exception in exchange_session.py
             try:
-                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': '.04'}))
+                logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': eth_trade_qty}))
             except (http.client.HTTPException, socket.timeout) as ex:
                 logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
                 logging.info ("Sleeping %s seconds and restarting Loop." % (sleep_time_sec))
                 sleep(sleep_time_sec)
                 continue
-            logging.info (gemini.session.new_order("ethusd", ".04", "20","sell", "immediate-or-cancel"))
+            logging.info (gemini.session.new_order("ethusd", eth_trade_qty, "20","sell", "immediate-or-cancel"))
             logging.info ("Transactions Complete")
             kbalances = kraken.get_balances()
             gbalances = gemini.get_balances()
@@ -105,7 +122,11 @@ while True:
        if not found_opportunity:
             logging.info ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
             sleep(sleep_time_sec)
-            
+
+       #if (float(g_bid_eth) + 1 < float(k_ask_eth)) and (float(k_bid_eth) + 1 < float(g_ask_eth)) and not found_opportunity:
+       #     logging.info ("Sleeping an additional 5 seconds.")
+       #     sleep(5)
+   
        logging.info ("")
 
    except KeyboardInterrupt:

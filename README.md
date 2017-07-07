@@ -13,6 +13,9 @@ Trade Dinars
 ## Running the code
 Run exchange_query.py in the root directory of this repository
 
+## Stage all changes
+`git add -A`
+
 ## Installation
 ### GDAX
 
