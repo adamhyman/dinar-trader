@@ -1,5 +1,5 @@
 #This only runs when it is inside of the gdax-python folder.
-
+#You should be able to use the Authenticated Client for everything.
 
 from time import sleep
 import gdax
@@ -37,7 +37,7 @@ with open(gdax_key, 'r') as f:
     secret = f.readline().strip()
     passphrase = f.readline().strip()
 
-#auth_client = gdax.AuthenticatedClient(key, secret, passphrase, product_id="ETH-USD")
+
 auth_client = gdax.AuthenticatedClient(key, secret, passphrase)
 
 def update_account_balances ():
