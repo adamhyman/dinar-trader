@@ -83,12 +83,9 @@ while True:
 
         log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
 
-        found_opportunity = False
-
         # Buy Gemini, Sell Kraken
         if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(200) and kbalances["ETH"] > float(1):
             logging.info ("Buying on Gemini, Selling on Kraken")
-            found_opportunity = True
             # TO DO: Handle the exception in exchange_session.py
             try:
                 logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'sell', 'ordertype': 'market', 'price': '20', 'volume': eth_trade_qty}))
@@ -105,7 +102,6 @@ while True:
         # Buy Kraken, Sell Gemini
         if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(200) and gbalances["ETH"] > float(1):
             logging.info ("Buying on Kraken, Selling on Gemini")
-            found_opportunity = True
             # TO DO: Handle the exception in exchange_session.py
             try:
                 logging.info (kraken.session.query_private('AddOrder', {'pair': 'XETHZUSD', 'type': 'buy', 'ordertype': 'market', 'price': '1000', 'volume': eth_trade_qty}))
@@ -118,12 +114,15 @@ while True:
             logging.info ("Transactions Complete")
             kbalances = kraken.get_balances()
             gbalances = gemini.get_balances()
+            # Skip wait statement and restart loop as an
+            # arbitrage opportunity may exist.
+            continue 
 
-        if not found_opportunity:
-            logging.info ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
-            sleep(sleep_time_sec)
+        # No more opportunities found. Sleep to ensure we won't be kicked off the servers for overpinging
+        logging.info ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
+        sleep(sleep_time_sec)
 
-        #if (float(g_bid_eth) + 1 < float(k_ask_eth)) and (float(k_bid_eth) + 1 < float(g_ask_eth)) and not found_opportunity:
+        #if (float(g_bid_eth) + 1 < float(k_ask_eth)) and (float(k_bid_eth) + 1 < float(g_ask_eth)):
         #     logging.info ("Sleeping an additional 5 seconds.")
         #     sleep(5)
 
