@@ -6,9 +6,8 @@ import importlib
 import logging
 import socket
 import http.client
+import krakenex
 from time import sleep
-krakenex = importlib.import_module("python3-krakenex.krakenex")
-gdax = importlib.import_module("gdax-python")
 from geminiapi.gemini import GeminiSession
 
 # Constants
