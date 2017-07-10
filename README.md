@@ -17,10 +17,5 @@ Run exchange_query.py in the root directory of this repository
 `git add -A`
 
 ## Installation
-### GDAX
-
-Requires:
-
-pip install websocket-client
-
-pip install bintrees
+Install the support libraries using the following pip command:
+`pip install requests websocket-client bintrees gdax krakenex`
