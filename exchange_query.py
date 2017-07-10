@@ -20,7 +20,11 @@ from exchange_session import exchange_session
 
 # Constants
 sleep_time_sec = 15
-eth_trade_base = .4     # Rand Uni [0, .1] will be added to this.  This makes tying a pair of buy-and-sell orders together easy, because we can now tie on quantiy.
+
+# Rand Uni [0, .1] will be added to this.  
+# This makes tying a pair of buy-and-sell orders together easy
+# because we can now tie on quantiy.
+eth_trade_base = .4
 
 # Key locations
 kraken_key = '../kraken.key'
