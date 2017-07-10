@@ -61,32 +61,32 @@ logging.info ("Running exchange queries and looking for opportunities.")
 
 
 while True:
-   try:
+    try:
 
-       eth_trade_qty = str(round((eth_trade_base + random.randint(1, 100)/1000), 3))
-       print (eth_trade_qty)
+        eth_trade_qty = str(round((eth_trade_base + random.randint(1, 100)/1000), 3))
+        print (eth_trade_qty)
 
-       # Get the bid and asking prices
-       logging.info ("Getting prices.")
-       k_trade_info = kraken.get_trade_info("ETHUSD")
-       k_ask_eth = k_trade_info["ask"] * 1.0026
-       k_bid_eth = k_trade_info["bid"] * 0.9974
-       g_trade_info = gemini.get_trade_info("ETHUSD")
-       g_ask_eth = g_trade_info["ask"] * 1.0025
-       g_bid_eth = g_trade_info["bid"] * 0.9975
+        # Get the bid and asking prices
+        logging.info ("Getting prices.")
+        k_trade_info = kraken.get_trade_info("ETHUSD")
+        k_ask_eth = k_trade_info["ask"] * 1.0026
+        k_bid_eth = k_trade_info["bid"] * 0.9974
+        g_trade_info = gemini.get_trade_info("ETHUSD")
+        g_ask_eth = g_trade_info["ask"] * 1.0025
+        g_bid_eth = g_trade_info["bid"] * 0.9975
 
-       logging.info ("Kraken Bid:  %s" % k_bid_eth)
-       logging.info ("Kraken Ask:  %s" % k_ask_eth)
-       logging.info ("Gemini Bid:  %s" % g_bid_eth)
-       logging.info ("Gemini Ask:  %s" % g_ask_eth)
-       logging.info ("")
-       
-       log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
+        logging.info ("Kraken Bid:  %s" % k_bid_eth)
+        logging.info ("Kraken Ask:  %s" % k_ask_eth)
+        logging.info ("Gemini Bid:  %s" % g_bid_eth)
+        logging.info ("Gemini Ask:  %s" % g_ask_eth)
+        logging.info ("")
 
-       found_opportunity = False
+        log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
 
-       # Buy Gemini, Sell Kraken
-       if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(200) and kbalances["ETH"] > float(1):
+        found_opportunity = False
+
+        # Buy Gemini, Sell Kraken
+        if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(200) and kbalances["ETH"] > float(1):
             logging.info ("Buying on Gemini, Selling on Kraken")
             found_opportunity = True
             # TO DO: Handle the exception in exchange_session.py
@@ -102,8 +102,8 @@ while True:
             kbalances = kraken.get_balances()
             gbalances = gemini.get_balances()
 
-       # Buy Kraken, Sell Gemini
-       if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(200) and gbalances["ETH"] > float(1):
+        # Buy Kraken, Sell Gemini
+        if float(g_bid_eth) > float(k_ask_eth) and kbalances["USD"] > float(200) and gbalances["ETH"] > float(1):
             logging.info ("Buying on Kraken, Selling on Gemini")
             found_opportunity = True
             # TO DO: Handle the exception in exchange_session.py
@@ -119,17 +119,17 @@ while True:
             kbalances = kraken.get_balances()
             gbalances = gemini.get_balances()
 
-       if not found_opportunity:
+        if not found_opportunity:
             logging.info ("No opportunities found. Sleeping for %s seconds." % sleep_time_sec)
             sleep(sleep_time_sec)
 
-       #if (float(g_bid_eth) + 1 < float(k_ask_eth)) and (float(k_bid_eth) + 1 < float(g_ask_eth)) and not found_opportunity:
-       #     logging.info ("Sleeping an additional 5 seconds.")
-       #     sleep(5)
-   
-       logging.info ("")
+        #if (float(g_bid_eth) + 1 < float(k_ask_eth)) and (float(k_bid_eth) + 1 < float(g_ask_eth)) and not found_opportunity:
+        #     logging.info ("Sleeping an additional 5 seconds.")
+        #     sleep(5)
 
-   except KeyboardInterrupt:
+        logging.info ("")
+
+    except KeyboardInterrupt:
        print ("Exiting...")
        break
 
