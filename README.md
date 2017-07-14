@@ -16,6 +16,16 @@ Run exchange_query.py in the root directory of this repository
 ## Stage all changes
 `git add -A`
 
+## Add files
+`git add -A`
+
+## Add and Commit
+`git commit -a`
+
+## Push all changes
+`git push origin develp -m "comment"`
+
+
 ## Installation
 Install the support libraries using the following pip command:
 `pip install requests websocket-client bintrees gdax krakenex`
