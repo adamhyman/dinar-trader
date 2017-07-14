@@ -63,10 +63,33 @@ logging.info ("")
 
 logging.info ("Running exchange queries and looking for opportunities.")
 
-
+# Store Starting Balances
+starting_usd = gbalances["USD"] + kbalances["USD"] + gdaxbalances["USD"]
+starting_eth = gbalances["ETH"] + kbalances["ETH"] + gdaxbalances["ETH"]
+starting_btc = gbalances["BTC"] + kbalances["BTC"] + gdaxbalances["BTC"]
 
 while True:
     try:
+        
+        # Stop program if there is a change of 5% in any asset
+        if (gbalances["USD"] + kbalances["USD"] + gdaxbalances["USD"]) > (starting_usd * 1.05):
+            print ('USD Increased - Stopping Program') 
+            break
+        if (gbalances["USD"] + kbalances["USD"] + gdaxbalances["USD"]) < (starting_usd * 0.95):
+            print ('USD Decreased - Stopping Program') 
+            break
+        if (gbalances["ETH"] + kbalances["ETH"] + gdaxbalances["ETH"]) > (starting_eth * 1.05):
+            print ('ETH Increased - Stopping Program') 
+            break
+        if (gbalances["ETH"] + kbalances["ETH"] + gdaxbalances["ETH"]) < (starting_eth * 0.95):
+            print ('ETH Decreased - Stopping Program') 
+            break
+        if (gbalances["BTC"] + kbalances["BTC"] + gdaxbalances["BTC"]) > (starting_btc * 1.05):
+            print ('BTC Increased - Stopping Program') 
+            break
+        if (gbalances["BTC"] + kbalances["BTC"] + gdaxbalances["BTC"]) < (starting_btc * 0.95):
+            print ('BTC Decreased - Stopping Program') 
+            break
 
         eth_trade_qty = str(round((eth_trade_base + random.randint(1, 100)/10000), 3))
         # print (eth_trade_qty)
