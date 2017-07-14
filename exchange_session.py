@@ -5,8 +5,9 @@
 import importlib
 import logging
 import socket
-import http.client
 import krakenex
+import gdax
+import http.client
 from time import sleep
 from geminiapi.gemini import GeminiSession
 
@@ -40,7 +41,7 @@ class exchange_session(object):
                 secret = f.readline().strip()
                 passphrase = f.readline().strip()
                 print ('Key ' + key)
-            self.session = gdax.AuthenticatedClient(key, secret, passphrase)
+                self.session = gdax.AuthenticatedClient(key, secret, passphrase)
             logging.info ("GDAX session configured.")
         elif (exchange == ""):
             raise ValueError("Missing exchange name.")
@@ -82,11 +83,7 @@ class exchange_session(object):
                 logging.info ("Gemini BTC: %s" % balance[0]["available"])
             return {'USD':float(balance[1]["available"]), 'ETH':float(balance[2]["available"]), 'BTC':float(balance[0]["available"])}
         elif (self.exchange.lower() == "gdax"):
-            balance = self.get_accounts()
-            self.USD = balance[0]['balance']
-            self.LTC = balance[1]['balance']
-            self.ETH = balance[2]['balance']
-            self.BTC = balance[3]['balance']
+            balance = self.session.get_accounts()
             if self.debug:
                 logging.info ("GDAX USD:  %s" % balance[0]['balance'])
                 logging.info ("GDAX ETH:  %s" % balance[2]['balance'])
