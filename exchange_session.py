@@ -40,7 +40,6 @@ class exchange_session(object):
                 key = f.readline().strip()
                 secret = f.readline().strip()
                 passphrase = f.readline().strip()
-                print ('Key ' + key)
                 self.session = gdax.AuthenticatedClient(key, secret, passphrase)
             logging.info ("GDAX session configured.")
         elif (exchange == ""):
