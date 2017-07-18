@@ -25,6 +25,8 @@ Run exchange_query.py in the root directory of this repository
 ## Push all changes
 `git push origin develp -m "comment"`
 
+## Drop all changes and download everything from repo again
+
 
 ## Installation
 Install the support libraries using the following pip command:
