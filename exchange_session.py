@@ -118,31 +118,3 @@ class exchange_session(object):
             if (ticker_pair == "ETHUSD"):
                 gdax_balance = self.session.get_product_ticker(self.get_pair_name("ETHUSD"))
                 return {'ask':float(gdax_balance['ask']), 'bid':float(gdax_balance['bid'])}
-        
-            
-    def get_balance_usd(self):
-        if (self.exchange.lower() == "kraken"):
-            return float(self.session.query_private('Balance')['result']["ZUSD"])
-        elif (self.exchange.lower() == "gemini"):
-            return float(self.session.get_balances()[1]["available"])
-        elif (self.exchange.lower() == "gdax"):
-            return float(self.session.get_accounts()[0]['balance'])
-            
-    def get_balance_eth(self):
-        if (self.exchange.lower() == "kraken"):
-            return float(self.session.query_private('Balance')['result']["XETH"])
-        elif (self.exchange.lower() == "gemini"):
-            return float(self.session.get_balances()[2]["available"])
-        elif (self.exchange.lower() == "gdax"):
-            return float(self.session.get_accounts()[2]['balance'])
-            
-    def get_balance_btc(self):
-        if (self.exchange.lower() == "kraken"):
-            return float(self.session.query_private('Balance')['result']["XXBT"])
-        elif (self.exchange.lower() == "gemini"):
-            return float(self.session.get_balances()[0]["available"])
-        elif (self.exchange.lower() == "gdax"):
-            return float(self.session.get_accounts()[3]['balance'])
-
-    def get_exchange_type(self):
-        return self.exchange
