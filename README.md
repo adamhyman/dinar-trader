@@ -8,7 +8,7 @@ Trade Dinars
 Install the support libraries using the following pip command:
 `pip install requests websocket-client bintrees gdax krakenex`
 
-## Misc Git Commands
+## Helpful Git Commands
 ### Switch branch
 `git checkout develop`
 
@@ -31,7 +31,7 @@ Note: the `-a` operator "shotguns" all your files into the commit. You rarely wa
 ### Push all changes
 `git push origin develp -m "comment"`
 
-## Drop all changes and download everything from repo again
+### Drop all changes and download everything from repo again
 git reset --hard; git pull
 
 Note: this will erase ALL changed files
