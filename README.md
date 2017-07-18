@@ -20,10 +20,12 @@ Run exchange_query.py in the root directory of this repository
 
 ### Add files
 `git add <filename>`
+
 Note: files should be added one at a time
 
 ### Commit
 `git commit`
+
 Note: the `-a` operator "shotguns" all your files into the commit. You rarely want to do this.
 
 ### Push all changes
@@ -31,4 +33,5 @@ Note: the `-a` operator "shotguns" all your files into the commit. You rarely wa
 
 ## Drop all changes and download everything from repo again
 git reset --hard; git pull
+
 Note: this will erase ALL changed files
