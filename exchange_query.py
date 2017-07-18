@@ -1,11 +1,3 @@
-#OORFZU-2IGCQ-K5I7EZ
-#0.492
-#2017-07-06 02:11:59,388 - root - INFO - Getting prices.
-#2017-07-06 02:12:00,074 - root - INFO - Kraken Bid:  270.464958
-#2017-07-06 02:12:00,136 - root - INFO - Kraken Ask:  272.7061974
-#2017-07-06 02:12:00,152 - root - INFO - Gemini Bid:  269.095575
-#2017-07-06 02:12:00,152 - root - INFO - Gemini Ask:  270.45444999999995
-
 import os
 import csv
 import logging
