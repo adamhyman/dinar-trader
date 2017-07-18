@@ -64,6 +64,7 @@ class exchange_session(object):
             while True:
                 try:
                     balance = self.session.query_private('Balance')['result']
+                    self.balance = {'USD':float(balance["ZUSD"]), 'ETH':float(balance["XETH"]), 'BTC':float(balance["XXBT"])}                    
                 except (http.client.HTTPException, socket.timeout) as ex:
                     logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
                     logging.info ("Sleeping %s seconds and restarting Loop." % (sleep_time_sec))
@@ -73,23 +74,23 @@ class exchange_session(object):
                     logging.info ("Kraken USD: %s" % balance["ZUSD"])
                     logging.info ("Kraken ETH: %s" % balance["XETH"])
                     logging.info ("Kraken BTC: %s" % balance["XXBT"])
-                return {'USD':float(balance["ZUSD"]), 'ETH':float(balance["XETH"]), 'BTC':float(balance["XXBT"])}
+                return self.balance
         elif (self.exchange.lower() == "gemini"):
             balance = self.session.get_balances()
+            self.balance = {'USD':float(balance[1]["available"]), 'ETH':float(balance[2]["available"]), 'BTC':float(balance[0]["available"])}
             if self.debug:
                 logging.info ("Gemini USD: %s" % balance[1]["available"])
                 logging.info ("Gemini ETH: %s" % balance[2]["available"])
                 logging.info ("Gemini BTC: %s" % balance[0]["available"])
-            return {'USD':float(balance[1]["available"]), 'ETH':float(balance[2]["available"]), 'BTC':float(balance[0]["available"])}
+            return self.balance
         elif (self.exchange.lower() == "gdax"):
             balance = self.session.get_accounts()
+            self.balance = {'USD':float(balance[0]['balance']), 'ETH':float(balance[2]['balance']), 'BTC':float(balance[3]['balance'])}
             if self.debug:
                 logging.info ("GDAX USD:  %s" % balance[0]['balance'])
                 logging.info ("GDAX ETH:  %s" % balance[2]['balance'])
                 logging.info ("GDAX BTC:  %s" % balance[3]['balance'])
-            return {'USD':float(balance[0]['balance']), 'ETH':float(balance[2]['balance']), 'BTC':float(balance[3]['balance'])}
-            
-
+            return self.balance
             
     def get_trade_info(self, ticker_pair="ETHUSD"):
         ## Returns recent trading activity for a symbol
