@@ -65,7 +65,7 @@ class exchange_session(object):
                 try:
                     balance = self.session.query_private('Balance')['result']
                     self.balance = {'USD':float(balance["ZUSD"]), 'ETH':float(balance["XETH"]), 'BTC':float(balance["XXBT"])}                    
-                except (http.client.HTTPException, socket.timeout) as ex:
+                except (http.client.HTTPException, socket.timeout, JSONDecodeError) as ex:
                     logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
                     logging.info ("Sleeping %s seconds and restarting Loop." % (sleep_time_sec))
                     sleep(sleep_time_sec)
@@ -105,7 +105,7 @@ class exchange_session(object):
                     if (ticker_pair == "ETHUSD"):
                         k_ticker = self.session.query_public('Ticker',{'pair': self.get_pair_name("ETHUSD")})['result']
                         return {'ask':float(k_ticker[self.get_pair_name("ETHUSD")]["a"][0]), 'bid':float(k_ticker[self.get_pair_name("ETHUSD")]["b"][0])}
-                except (http.client.HTTPException, socket.timeout) as ex:
+                except (http.client.HTTPException, socket.timeout, JSONDecodeError) as ex:
                     logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
                     logging.info ("Sleeping %s seconds and restarting Loop." % (sleep_time_sec))
                     sleep(sleep_time_sec)
