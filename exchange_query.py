@@ -1,3 +1,11 @@
+#OORFZU-2IGCQ-K5I7EZ
+#0.492
+#2017-07-06 02:11:59,388 - root - INFO - Getting prices.
+#2017-07-06 02:12:00,074 - root - INFO - Kraken Bid:  270.464958
+#2017-07-06 02:12:00,136 - root - INFO - Kraken Ask:  272.7061974
+#2017-07-06 02:12:00,152 - root - INFO - Gemini Bid:  269.095575
+#2017-07-06 02:12:00,152 - root - INFO - Gemini Ask:  270.45444999999995
+
 import os
 import csv
 import logging
@@ -15,7 +23,7 @@ sleep_time_sec = 15
 
 # Rand Uni [0, .1] will be added to this.  
 # This makes tying a pair of buy-and-sell orders together easy
-# because we can now tie on quantity.
+# because we can now tie on quantiy.
 eth_trade_base = .3
 
 # Key locations
@@ -55,36 +63,37 @@ logging.info ("")
 
 logging.info ("Running exchange queries and looking for opportunities.")
 
-# Store Starting Balances
 starting_usd = gbalances["USD"] + kbalances["USD"] + gdaxbalances["USD"]
 starting_eth = gbalances["ETH"] + kbalances["ETH"] + gdaxbalances["ETH"]
 starting_btc = gbalances["BTC"] + kbalances["BTC"] + gdaxbalances["BTC"]
 
+
 while True:
     try:
-        # Stop program if there is a change of 5% in any asset
+
         if (gbalances["USD"] + kbalances["USD"] + gdaxbalances["USD"]) > (starting_usd * 1.05):
-            logging.warning ('USD Increased - Stopping Program') 
+            print ('USD Increased - Stopping Program') 
             break
         if (gbalances["USD"] + kbalances["USD"] + gdaxbalances["USD"]) < (starting_usd * 0.95):
-            logging.warning ('USD Decreased - Stopping Program') 
+            print ('USD Decreased - Stopping Program') 
             break
         if (gbalances["ETH"] + kbalances["ETH"] + gdaxbalances["ETH"]) > (starting_eth * 1.05):
-            logging.warning ('ETH Increased - Stopping Program') 
+            print ('ETH Increased - Stopping Program') 
             break
         if (gbalances["ETH"] + kbalances["ETH"] + gdaxbalances["ETH"]) < (starting_eth * 0.95):
-            logging.warning ('ETH Decreased - Stopping Program') 
+            print ('ETH Decreased - Stopping Program') 
             break
         if (gbalances["BTC"] + kbalances["BTC"] + gdaxbalances["BTC"]) > (starting_btc * 1.05):
-            logging.warning ('BTC Increased - Stopping Program') 
+            print ('BTC Increased - Stopping Program') 
             break
         if (gbalances["BTC"] + kbalances["BTC"] + gdaxbalances["BTC"]) < (starting_btc * 0.95):
-            logging.warning ('BTC Decreased - Stopping Program') 
+            print ('BTC Decreased - Stopping Program') 
             break
 
         eth_trade_qty = str(round((eth_trade_base + random.randint(1, 100)/10000), 3))
+        # print (eth_trade_qty)
 
-        # Get the bid and asking prices from each market
+        # Get the bid and asking prices
         logging.info ("Getting prices.")
         k_trade_info = kraken.get_trade_info("ETHUSD")
         k_ask_eth = k_trade_info["ask"] * 1.0026
@@ -106,7 +115,7 @@ while True:
         logging.info ("Gdax Ask:  %s" % gdax_ask_eth)
         logging.info ("")
 
-        log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth), 'Arbitrage: Buy', 'Arbitrage: Sell', 'Arbitrage: Amount'])
+        log_writer.writerow([datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S.%f'), str(kbalances["USD"]), str(kbalances["ETH"]), str(kbalances["BTC"]), str(gbalances["USD"]), str(gbalances["ETH"]), str(gbalances["BTC"]), str(k_ask_eth), str(k_bid_eth), str(g_ask_eth), str(g_bid_eth)])
 
         # Buy Gemini, Sell Kraken
         if float(k_bid_eth) > float(g_ask_eth) and gbalances["USD"] > float(200) and kbalances["ETH"] > float(1):
@@ -157,7 +166,7 @@ while True:
         logging.info ("")
 
     except KeyboardInterrupt:
-       logging.info ("Exiting...")
+       print ("Exiting...")
        break
 
 logfile.close()

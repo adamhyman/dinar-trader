@@ -1,5 +1,5 @@
 """
-   Ari, this wrapper is from here:  https://github.com/ericsomdahl/python-bittrex/blob/master/bittrex/bittrex.py
+   Ari, this is from here:  https://github.com/ericsomdahl/python-bittrex/blob/master/bittrex/bittrex.py
 """
 
 import time

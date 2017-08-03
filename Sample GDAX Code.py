@@ -24,6 +24,7 @@ print ('ETH Ask is ' + str(gdax_ask_eth) + ' and ETH Bid is ' + str(gdax_bid_eth
 
 #  Get BTC Prices
 gdax_ticker = public_client.get_product_ticker(product_id='BTC-USD')
+print ('GDAX TICKER:  ' +str(gdax_ticker))
 gdax_ask_btc = gdax_ticker['ask']
 gdax_bid_btc = gdax_ticker['bid']
 

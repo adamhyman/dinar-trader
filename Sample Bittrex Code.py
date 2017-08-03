@@ -1,11 +1,12 @@
 
 
 """
-The Bittrex wrapper is here:  https://github.com/ericsomdahl/python-bittrex/blob/master/bittrex/bittrex.py
+The Bittrex class is here:  https://github.com/ericsomdahl/python-bittrex/blob/master/bittrex/bittrex.py
 """
 
 
 import Bittrex
+#import json
 
 
 bittrex_key = '../bittrex.key'
@@ -16,8 +17,14 @@ with open(bittrex_key, 'r') as f:
 
 bittrex = Bittrex.Bittrex(key, secret)
 
-
 #print (bittrex.get_markets())
+
+
+#############################################
+#       Get prices individually             #
+#############################################
+
+
 print (bittrex.get_ticker('BTC-LTC'))
 print (bittrex.get_ticker('BTC-XRP'))
 print (bittrex.get_ticker('BTC-ARK'))
@@ -28,11 +35,7 @@ print (bittrex.get_ticker('ETH-GNT'))
 print (bittrex.get_ticker('ETH-REP'))
 print (bittrex.get_ticker('ETH-BAT'))
 
-
-
-
 bittrex_BTC_LTC = bittrex.get_ticker('BTC-LTC')
-
 
 bittrex_BTC_LTC_bid = bittrex_BTC_LTC['result']['Bid']
 bittrex_BTC_LTC_ask = bittrex_BTC_LTC['result']['Ask']
@@ -41,12 +44,22 @@ print ('Bittrex BTC-LTC Bid:  ' + str(bittrex_BTC_LTC_bid))
 print ('Bittrex BTC-LTC Ask:  ' + str(bittrex_BTC_LTC_ask))
 
 
-import json
+#############################################
+#       Get all prices                      #
+#############################################
+
+#  This is the public API that is being accessed:
+#  https://bittrex.com/api/v1.1/public/getorderbook?market=BTC-ETH&type=both&depth=10
+
+#  The response is too long for IDLE.
+print (bittrex.get_orderbook('BTC-ETH', 'both', 10)['success'])
+#print (bittrex.get_orderbook('BTC-ETH', 'both', 10)['result']['buy'])
 
 
 
-#  Get Balances
-
+#############################################
+#       Get Balances                        #
+#############################################
 
 
 def getbalances () :
@@ -87,3 +100,8 @@ getbalances ()
 #  Ari, you're welcome to run them and see if it works.
 #print (bittrex.buy_market('BTC-LTC', .5))
 #print (bittrex.sell_market('BTC-LTC', .5))
+
+
+
+
+
