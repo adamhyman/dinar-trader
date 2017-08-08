@@ -36,6 +36,14 @@ ch.setFormatter(formatter)
 root.addHandler(ch)
 
 
+def double_quote(word):
+    double_q = '"' # double quote
+    return double_q + str(word) + double_q
+def single_quote(word):
+    single_quote = "'" # single quote
+    return single_quote + str(word) + single_quote
+
+
 class currency(object):
     def __init__(self, session, currency, symbol, balance = 0):
         self.session = session
@@ -50,7 +58,7 @@ class currency(object):
             self.min_increment = '0.01'
         
 
-    def update_balance(self, balance, t1, t2):
+    def update_balance(self, balance, t1=0, t2=0):
         self.balance = balance
         self.t1 = t1
         self.t2 = t2
@@ -64,7 +72,8 @@ class currency(object):
     def print_symbol(self):
         return str(self.symbol)
 
-
+    def get_balance(self):
+        return float(self.balance)
 
 
         
@@ -192,16 +201,21 @@ class book(object):
 
         
         if (self.exchange.lower() == "kraken"):
-            #self.currency.balance = float(self.currency.balance) + float(1)
-            
-            logging.info ("Buying on Kraken, Selling on Gemini")
+
             # TO DO: Handle the exception in exchange_session.py
             while True:
                 try:
                     if (trans.lower() == 'buy'):
-                        logging.info (self.session.query_private('AddOrder', {'pair': self.symbol, 'type': 'buy', 'ordertype': 'market', 'price': '100000', 'volume': str(qty)}))
+                        mydict = {'pair': self.symbol, 'type': 'buy', 'ordertype': 'market', 'price': '100000', 'volume': qty}
+
+
+                        # Temporarily commented out the trading function
+                        logging.info (self.session.query_private('AddOrder', mydict))
                     if (trans.lower() == 'sell'):
-                        logging.info (self.session.query_private('AddOrder', {'pair': self.symbol, 'type': 'sell', 'ordertype': 'market', 'price': str(self.base.min_increment), 'volume': str(qty)}))
+                        mydict = {'pair': self.symbol, 'type': 'sell', 'ordertype': 'market', 'price': self.base.min_increment, 'volume': qty}
+                        
+                        # Temporarily commented out the trading function
+                        logging.info (self.session.query_private('AddOrder', mydict))
                     break
                 except (http.client.HTTPException, socket.timeout) as ex:
                     logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
@@ -217,6 +231,45 @@ class book(object):
                 logging.info (self.session.new_order(self.symbol, str(qty), self.base.min_increment,"sell", "immediate-or-cancel"))
 
 
+        if (self.exchange.lower() == "gdax"):
+            if (trans.lower() == 'buy'):
+                logging.info (self.session.buy(type='market', size=str(qty), product_id=self.symbol))
+
+            if (trans.lower() == 'sell'):
+                logging.info (self.session.sell(type='market', size=str(qty), product_id=self.symbol))
+
+        if (self.exchange.lower() == "bittrex"):
+            if (trans.lower() == 'buy'):
+                logging.info (self.session.buy_limit(self.symbol, qty, 100000))
+
+            if (trans.lower() == 'sell'):
+                logging.info (self.session.sell_limit(self.symbol, qty, 0.00001))
+
+        if (self.exchange.lower() == "liqui"):
+            if (trans.lower() == 'buy'):
+                logging.info (self.session.buy('eth_btc', 10000, qty))
+
+            if (trans.lower() == 'sell'):
+                logging.info (self.session.sell('eth_btc', 0.00001, qty))
+
+
+        if (trans.lower() == 'buy'):
+            self.currency.update_balance(float(self.currency.balance) + float(qty))                         #  Buying increases currency by the qty puchased
+            self.base.update_balance(float(self.base.balance) - float(self.bids[0][0]) * float(qty))        #  Buying decreases base by the amount paid
+
+
+        if (trans.lower() == 'sell'):
+            self.currency.update_balance(float(self.currency.balance) - float(qty))                         #  Selling decreases currency by the qty sold
+            self.base.update_balance(float(self.base.balance) + float(self.bids[0][0]) * float(qty))        #  Selling increases base by the amount received
+
+
+    def ask(self):
+            return float(self.asks[0][0])
+
+    def bid(self):
+            return float(self.bids[0][0])
+
+                
 ##        print (self.base.min_increment)
 
     def print_values(self):
@@ -297,7 +350,7 @@ class exchange_session(object):
             
 ##            self.books.append(book(self.session, self.exchange, 'BTCUSD', self.currency_from_symbol('BTC'), self.currency_from_symbol('USD'), 'BTCUSD'))
             self.books.append(book(self.session, self.exchange, 'ETHUSD', self.currency_from_symbol('ETH'), self.currency_from_symbol('USD'), 'ETHUSD'))			
-##            self.books.append(book(self.session, self.exchange, 'ETHBTC', self.currency_from_symbol('ETH'), self.currency_from_symbol('BTC'), 'ETHBTC'))
+            self.books.append(book(self.session, self.exchange, 'ETHBTC', self.currency_from_symbol('ETH'), self.currency_from_symbol('BTC'), 'ETHBTC'))
             
         # Create a GDAX exchange session object
 
@@ -331,16 +384,16 @@ class exchange_session(object):
             self.currencies.append(currency(self.session, 'USDT', 'USDT'))
             self.currencies.append(currency(self.session, 'BTC', 'BTC'))
             self.currencies.append(currency(self.session, 'ETH', 'ETH'))
-            self.currencies.append(currency(self.session, 'XRP', 'XRP'))
-            self.currencies.append(currency(self.session, 'LTC', 'LTC'))
-            self.currencies.append(currency(self.session, 'DASH', 'DASH'))
+##            self.currencies.append(currency(self.session, 'XRP', 'XRP'))
+##            self.currencies.append(currency(self.session, 'LTC', 'LTC'))
+##            self.currencies.append(currency(self.session, 'DASH', 'DASH'))
             self.print_balances('Created %s Currencies:' %(self.exchange.title()))
 			
             self.books.append(book(self.session, self.exchange, 'ETHBTC', self.currency_from_symbol('ETH'), self.currency_from_symbol('BTC'), 'BTC-ETH'))
-            self.books.append(book(self.session, self.exchange, 'LTCBTC', self.currency_from_symbol('LTC'), self.currency_from_symbol('BTC'), 'BTC-LTC'))
-            self.books.append(book(self.session, self.exchange, 'XRPBTC', self.currency_from_symbol('XRP'), self.currency_from_symbol('BTC'), 'BTC-XRP'))
-            self.books.append(book(self.session, self.exchange, 'DASHBTC', self.currency_from_symbol('DASH'), self.currency_from_symbol('BTC'), 'BTC-DASH'))
-            self.books.append(book(self.session, self.exchange, 'DASHETH', self.currency_from_symbol('DASH'), self.currency_from_symbol('ETH'), 'ETH-DASH'))
+##            self.books.append(book(self.session, self.exchange, 'LTCBTC', self.currency_from_symbol('LTC'), self.currency_from_symbol('BTC'), 'BTC-LTC'))
+##            self.books.append(book(self.session, self.exchange, 'XRPBTC', self.currency_from_symbol('XRP'), self.currency_from_symbol('BTC'), 'BTC-XRP'))
+##            self.books.append(book(self.session, self.exchange, 'DASHBTC', self.currency_from_symbol('DASH'), self.currency_from_symbol('BTC'), 'BTC-DASH'))
+##            self.books.append(book(self.session, self.exchange, 'DASHETH', self.currency_from_symbol('DASH'), self.currency_from_symbol('ETH'), 'ETH-DASH'))
             
 			
             
@@ -354,13 +407,13 @@ class exchange_session(object):
             self.currencies.append(currency(self.session, 'USDT', 'USDT'))
             self.currencies.append(currency(self.session, 'BTC', 'BTC'))
             self.currencies.append(currency(self.session, 'ETH', 'ETH'))
-            self.currencies.append(currency(self.session, 'LTC', 'LTC'))
-            self.currencies.append(currency(self.session, 'DASH', 'DASH'))
+##            self.currencies.append(currency(self.session, 'LTC', 'LTC'))
+##            self.currencies.append(currency(self.session, 'DASH', 'DASH'))
 			
             self.print_balances('Created %s Currencies:' %(self.exchange.title()))
 			
             self.books.append(book(self.session, self.exchange, 'ETHBTC', self.currency_from_symbol('ETH'), self.currency_from_symbol('BTC'), 'eth_btc'))
-            self.books.append(book(self.session, self.exchange, 'DASHBTC', self.currency_from_symbol('DASH'), self.currency_from_symbol('BTC'), 'dash_btc'))
+##            self.books.append(book(self.session, self.exchange, 'DASHBTC', self.currency_from_symbol('DASH'), self.currency_from_symbol('BTC'), 'dash_btc'))
 			
 			
         elif (exchange == ""):
@@ -391,7 +444,7 @@ class exchange_session(object):
                         if b.lower() == c.symbol.lower():
                             c.update_balance(balances[b], t1, t2)
                 
-                self.print_balances('Updated %s Currencies:' %(self.exchange.title()))
+                #self.print_balances('Updated %s Currencies:' %(self.exchange.title()))
                 break
 
         elif (self.exchange.lower() == "gemini"):
