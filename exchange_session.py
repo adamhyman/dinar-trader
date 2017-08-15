@@ -512,34 +512,3 @@ class exchange_session(object):
         for book in self.books:
             if book.book == name:
                 return book
-
-			
-    def get_trade_info(self, ticker_pair="ETHUSD"):
-        ## Returns recent trading activity for a symbol
-        ## Valid ticker pairs: 
-        ## 1. "ETHUSD"
-        if (self.exchange.lower() == "kraken"):
-            ## Note: Kraken has a known issue of timing out every so often
-            ##       so this is addressed by catching a HTTP 504 error and
-            ##       retrying the query
-            while True:
-                try:
-                    if (ticker_pair == "ETHUSD"):
-                        k_ticker = self.session.query_public('Ticker',{'pair': self.get_pair_name("ETHUSD")})['result']
-                        return {'ask':float(k_ticker[self.get_pair_name("ETHUSD")]["a"][0]), 'bid':float(k_ticker[self.get_pair_name("ETHUSD")]["b"][0])}
-                except (http.client.HTTPException, socket.timeout) as ex:
-                    logging.warning ("\"{0}\" exception occurred. Arguments: {1!r}".format(type(ex).__name__, ex.args))
-                    logging.info ("Sleeping %s seconds and restarting Loop." % (sleep_time_sec))
-                    sleep(sleep_time_sec)
-                    continue
-        elif (self.exchange.lower() == "gemini"):
-            if (ticker_pair == "ETHUSD"):
-                gbalance = self.session.get_ticker(self.get_pair_name("ETHUSD"))
-                return {'ask':float(gbalance["ask"]), 'bid':float(gbalance["bid"])}
-        
-        elif (self.exchange.lower() == "gdax"):
-            if (ticker_pair == "ETHUSD"):
-                gdax_balance = self.session.get_product_ticker(self.get_pair_name("ETHUSD"))
-                return {'ask':float(gdax_balance['ask']), 'bid':float(gdax_balance['bid'])}
-
-		
